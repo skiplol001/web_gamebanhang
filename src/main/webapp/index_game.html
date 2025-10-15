@@ -114,6 +114,15 @@
                                 <button class="action-button inspect-button" data-action="inspect">Kiểm tra</button>
                             </div>
                         </div>
+                        <div class="inventory-item-row" data-item-type="key-item">
+                            <div class="item-info">
+                                <span>Giấy phép Kinh Doanh - Số lượng: 1</span>
+                                <p class="item-description">Chứng nhận cửa hàng hoạt động hợp pháp.</p>
+                            </div>
+                            <div class="inventory-actions">
+                                <button class="action-button inspect-button" data-action="inspect">Kiểm tra</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -132,30 +141,50 @@
                 </div>
                 
                 <div id="haggle-content">
+                    
                     <div id="haggle-selection-list">
                         <p class="selection-title">Chọn vật phẩm để mặc cả:</p>
                         <div id="haggle-item-selection-list">
-                            <button class="haggle-select-item" data-item="banh_mi" data-price="50" data-max-discount-percent="50">Bánh mì - Giá: 50$</button>
-                            <button class="haggle-select-item" data-item="nuoc_suoi" data-price="30" data-max-discount-percent="33">Nước suối - Giá: 30$</button>
+                            <button class="haggle-select-item" data-item="banh_mi" data-price="50" data-max-discount-percent="50">
+                                Bánh mì - Giá: 50$
+                            </button>
+                            <button class="haggle-select-item" data-item="nuoc_suoi" data-price="30" data-max-discount-percent="33">
+                                Nước suối - Giá: 30$
+                            </button>
+                            <button class="haggle-select-item" data-item="thuoc" data-price="100" data-max-discount-percent="25">
+                                Thuốc - Giá: 100$
+                            </button>
+                            <button class="haggle-select-item" data-item="snack" data-price="20" data-max-discount-percent="60">
+                                Snack - Giá: 20$
+                            </button>
                         </div>
                     </div>
+                    
                     <div id="haggle-detail-panel" class="hidden">
                         <div id="haggle-item-info">
                             <h3 id="current-haggle-item-name">Bánh mì</h3>
                             <p>Giá gốc: <span id="original-price">50$</span> | Giảm tối đa: <span id="max-discount-value">25$ (50%)</span></p>
                         </div>
+
                         <div id="haggle-form">
                             <div class="input-group">
                                 <label for="input-discount-money">Số tiền giảm ($):</label>
                                 <input type="number" id="input-discount-money" value="0" min="0">
                             </div>
+                            <div class="input-group slider-group">
+                                <label>Phần trăm giảm:</label>
+                                <input type="range" id="input-discount-percent-slider" min="0" max="100" value="0">
+                                <span id="display-discount-percent">0%</span>
+                            </div>
                         </div>
+
                         <div class="result-info">
                             <p>Tỉ lệ thành công: <span id="success-rate">50%</span></p>
                             <p>Giá mới: <span id="new-price">50$</span></p>
                         </div>
                     </div>
                 </div>
+
                 <div id="haggle-footer">
                     <button id="btn-back-haggle" class="hidden">QUAY LẠI</button>
                     <button id="btn-confirm-haggle">ĐỒNG Ý MẶC CẢ</button>
@@ -176,8 +205,9 @@
                     <button class="tab-button active" data-tab="kho-hang">Kho hàng</button>
                     <button class="tab-button" data-tab="mo-khoa">Mở khóa vật phẩm</button>
                 </div>
-                
+
                 <div id="goods-content">
+                    
                     <div id="tab-kho-hang" class="goods-tab active">
                         <div class="goods-table-header">
                             <span class="col-name">Tên hàng hóa</span>
@@ -192,20 +222,44 @@
                                 <span class="col-stock">10</span>
                                 <input type="number" value="0" min="-10" class="col-input">
                             </div>
+                            <div class="goods-item-row">
+                                <span class="col-name">Nước suối</span>
+                                <span class="col-price">30$</span>
+                                <span class="col-stock">10</span>
+                                <input type="number" value="0" min="-10" class="col-input">
+                            </div>
+                            <div class="goods-item-row">
+                                <span class="col-name">Thuốc</span>
+                                <span class="col-price">100$</span>
+                                <span class="col-stock">10</span>
+                                <input type="number" value="0" min="-10" class="col-input">
+                            </div>
                         </div>
                         <p class="tab-info">Dùng số dương để nhập thêm hàng, số âm để trả lại hàng.</p>
                     </div>
+
                     <div id="tab-mo-khoa" class="goods-tab hidden">
                         <div id="mo-khoa-list">
                             <div class="unlock-item-row" data-item="snack">
                                 <span class="unlock-item-name">Snack - Giá mở khóa: 300$</span>
                                 <button class="btn-unlock">Mở khóa</button>
                             </div>
+                             <div class="unlock-item-row" data-item="coffee">
+                                <span class="unlock-item-name">Cà phê - Giá mở khóa: 400$</span>
+                                <button class="btn-unlock">Mở khóa</button>
+                            </div>
+                            <div class="unlock-item-row" data-item="cake">
+                                <span class="unlock-item-name">Bánh ngọt - Giá mở khóa: 350$</span>
+                                <button class="btn-unlock">Mở khóa</button>
+                            </div>
                         </div>
+                        
                         <div class="unlock-info-box">
                             <p class="info-title">Thông tin mở khóa:</p>
                             <ul>
                                 <li>Mở khóa vật phẩm mới để bán trong cửa hàng.</li>
+                                <li>Mỗi vật phẩm có chi phí mở khóa khác nhau.</li>
+                                <li>Sau khi mở khóa, bạn có thể nhập hàng để bán.</li>
                             </ul>
                         </div>
                     </div>
@@ -233,28 +287,72 @@
                     <div id="customer-details">
                         <div class="info-row large">
                             <span class="info-label">Tên khách hàng:</span>
-                            <span id="display-customer-name" class="info-value primary-value">Trần Văn A</span>
+                            <span id="display-customer-name" class="info-value primary-value">Chưa có khách</span>
                         </div>
                         
                         <div class="info-row">
                             <span class="info-label">Mã khách hàng:</span>
-                            <span id="display-customer-id" class="info-value">#CUS1024</span>
+                            <span id="display-customer-id" class="info-value">#N/A</span>
                         </div>
                         
                         <div class="info-row half-width">
                             <span class="info-label">Giới tính:</span>
-                            <span id="display-customer-gender" class="info-value">Nam</span>
+                            <span id="display-customer-gender" class="info-value">?</span>
                         </div>
 
                         <div class="info-row half-width">
                             <span class="info-label">Tuổi:</span>
-                            <span id="display-customer-age" class="info-value">35</span>
+                            <span id="display-customer-age" class="info-value">?</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="info-footer">
                     <p>Thông tin này giúp bạn đưa ra quyết định BÁN hoặc KHÔNG.</p>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div id="daily-customers-overlay" class="hidden">
+            <div id="daily-customers-panel">
+                <div class="daily-header">
+                    <h2>HỒ SƠ KHÁCH HÀNG TRONG NGÀY</h2>
+                    <button id="btn-close-daily-customers" class="close-button">❌</button>
+                </div>
+                
+                <div id="daily-customers-content">
+                    <div id="daily-customer-list">
+                        
+                        <div class="daily-customer-row clickable-customer" data-customer-id="KH003" data-customer-name="Tiểu Lạc" data-customer-gender="Nữ" data-customer-age="22">
+                            <span class="customer-name-label">1. Tiểu Lạc | Mã: KH003</span>
+                        </div>
+                        
+                        <div class="daily-customer-row clickable-customer" data-customer-id="KH004" data-customer-name="Shyn Mụi Mị" data-customer-gender="Nữ" data-customer-age="25">
+                            <span class="customer-name-label">2. Shyn Mụi Mị | Mã: KH004</span>
+                        </div>
+                        
+                        <div class="daily-customer-row clickable-customer" data-customer-id="KH010" data-customer-name="Huyền Thanh Tố Uyên" data-customer-gender="Nữ" data-customer-age="19">
+                            <span class="customer-name-label">3. Huyền Thanh Tố Uyên | Mã: KH10</span>
+                        </div>
+
+                        <div class="daily-customer-row clickable-customer" data-customer-id="KH012" data-customer-name="Lữ Khách Phương Bắc" data-customer-gender="Nam" data-customer-age="45">
+                            <span class="customer-name-label">4. Lữ Khách Phương Bắc | Mã: KH012</span>
+                        </div>
+                        
+                        <div class="daily-customer-row clickable-customer" data-customer-id="KH013" data-customer-name="Vua Ăn Độn" data-customer-gender="Nam" data-customer-age="38">
+                            <span class="customer-name-label">5. Vua Ăn Độn | Mã: KH013</span>
+                        </div>
+
+                        <div class="daily-customer-row clickable-customer" data-customer-id="KH014" data-customer-name="Sứ Giả Khe Nứt" data-customer-gender="Nữ" data-customer-age="30">
+                            <span class="customer-name-label">6. Sứ Giả Khe Nứt | Mã: KH014</span>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="daily-footer">
+                    <p>Nhấp vào tên khách hàng để xem thông tin chi tiết.</p>
                 </div>
             </div>
         </div>
@@ -268,9 +366,10 @@
         const inventoryOverlay = document.getElementById('inventory-overlay');
         const haggleOverlay = document.getElementById('haggle-overlay');
         const goodsOverlay = document.getElementById('goods-overlay');
-        const customerInfoOverlay = document.getElementById('customer-info-overlay'); // KHAI BÁO MỚI
+        const customerInfoOverlay = document.getElementById('customer-info-overlay');
+        const dailyCustomersOverlay = document.getElementById('daily-customers-overlay');
 
-        // ------------------ LOGIC MỞ/ĐÓNG PANELS ------------------
+        // ------------------ LOGIC MỞ/ĐÓNG PANELS CHUNG ------------------
 
         // Mở Shop
         document.getElementById('btn-shop').addEventListener('click', function() { shopOverlay.classList.remove('hidden'); });
@@ -303,14 +402,20 @@
         document.getElementById('btn-close-goods').addEventListener('click', function() { goodsOverlay.classList.add('hidden'); });
         document.getElementById('btn-cancel-goods').addEventListener('click', function() { goodsOverlay.classList.add('hidden'); });
 
-        // Mở Customer Info Panel (THÔNG TIN KHÁCH HÀNG) - LOGIC MỚI
+        // Mở Customer Info Panel (THÔNG TIN KHÁCH HÀNG)
         document.getElementById('btn-ttkh').addEventListener('click', function() {
             customerInfoOverlay.classList.remove('hidden'); 
         });
-
-        // Đóng Customer Info Panel - LOGIC MỚI
+        // Đóng Customer Info Panel
         document.getElementById('btn-close-customer-info').addEventListener('click', function() { customerInfoOverlay.classList.add('hidden'); });
 
+
+        // Mở Daily Customers Panel (KHÁCH HÀNG TRONG NGÀY)
+        document.getElementById('btn-khtn').addEventListener('click', function() {
+            dailyCustomersOverlay.classList.remove('hidden'); 
+        });
+        // Đóng Daily Customers Panel
+        document.getElementById('btn-close-daily-customers').addEventListener('click', function() { dailyCustomersOverlay.classList.add('hidden'); });
 
         // ------------------ LOGIC CHUYỂN TAB (HÀNG HÓA) ------------------
         const tabButtons = document.querySelectorAll('#goods-panel .tab-button');
@@ -325,6 +430,28 @@
 
                 document.getElementById('tab-' + targetTabId).classList.remove('hidden');
                 this.classList.add('active');
+            });
+        });
+
+        // ------------------ LOGIC MỞ TTKH TỪ DANH SÁCH KH TRONG NGÀY ------------------
+        const customerRows = document.querySelectorAll('#daily-customer-list .clickable-customer');
+        
+        customerRows.forEach(row => {
+            row.addEventListener('click', function() {
+                const name = this.getAttribute('data-customer-name');
+                const id = this.getAttribute('data-customer-id');
+                const gender = this.getAttribute('data-customer-gender');
+                const age = this.getAttribute('data-customer-age');
+
+                // Cập nhật dữ liệu vào Panel Thông tin KH
+                document.getElementById('display-customer-name').textContent = name;
+                document.getElementById('display-customer-id').textContent = '#' + id;
+                document.getElementById('display-customer-gender').textContent = gender;
+                document.getElementById('display-customer-age').textContent = age;
+
+                // Đóng Panel Khách hàng Trong Ngày và mở Panel Thông tin KH
+                dailyCustomersOverlay.classList.add('hidden');
+                customerInfoOverlay.classList.remove('hidden');
             });
         });
 

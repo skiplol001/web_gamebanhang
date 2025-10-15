@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cửa Hàng Hoang</title>
+    <link rel="stylesheet" href="style_game.css"> 
+</head>
+<body>
+    <div id="main-container"> 
+        
+        <div id="top-panel">
+            <div class="info-group">
+                <span class="label">Tên:</span>
+                <span id="player-name">Player</span>
+            </div>
+            <div class="info-group">
+                <span class="label">Thời gian:</span>
+                <span id="game-time">00:00</span>
+            </div>
+            <div class="info-group">
+                <span class="label">Tiền:</span>
+                <span id="player-money">0000</span>
+            </div>
+            <button id="btn-setting">⚙️</button>
+        </div>
+
+        <div id="content-panel">
+            <div id="shop-button-container">
+                <button id="btn-shop">CỬA HÀNG TIỆN LỢI</button>
+            </div>
+            <div id="game-background">
+                <button id="action-button">
+                    button nơi người chơi click vào để game hiểu người chơi đã tiếp nhận vị khách này (chỉ có thể phục vụ mỗi khách tránh việc spam)
+                </button>
+            </div>
+            <div id="bottom-panel">
+                <button id="btn-ttkh" class="customer-info-button">
+                    Thông tin KH
+                </button>
+                <div id="interaction-panel">
+                    <div id="spirit-container">
+                        <span id="spirit-label">Điểm Tinh Thần Hiện Tại</span>
+                        <div id="spirit-circle" style="--progress: 100;">
+                            <span id="spirit-value">100</span>
+                        </div>
+                    </div>
+                    <div id="action-buttons">
+                        <button id="btn-ban">BÁN</button>
+                        <button id="btn-khong">KHÔNG</button>
+                    </div>
+                </div>
+                <button id="btn-khtn" class="customer-info-button">
+                    KH Trong Ngày
+                </button>
+            </div>
+        </div>
+        
+        <div id="dialogue-box">
+            <div id="character-name-box">
+                <span id="character-name">Nhân Vật XYZ</span>
+            </div>
+            <p id="dialogue-text">Đây là khu vực hiển thị hội thoại của nhân vật...</p>
+        </div>
+
+        
+        <div id="shop-overlay" class="hidden">
+            <div id="shop-panel">
+                <div class="shop-header">
+                    <h2>CỬA HÀNG TIỆN LỢI</h2>
+                    <button id="btn-close-shop" class="close-button">❌</button>
+                </div>
+                <div id="shop-content">
+                    <div id="item-list-container">
+                        <div class="shop-item-row">
+                            <div class="item-info">
+                                <span>Bánh mì - Giá: 50$ - Tồn kho: 100</span>
+                            </div>
+                            <button class="buy-button" data-item="banh_mi">Mua x1</button>
+                        </div>
+                        <div class="shop-item-row">
+                            <div class="item-info">
+                                <span>Nước suối - Giá: 100$ - Tồn kho: 5</span>
+                            </div>
+                            <button class="buy-button low-stock" data-item="nuoc_suoi">Mua x1</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="shop-footer">
+                    <button id="btn-shop-macca">MẶC CẢ</button>
+                    <button id="btn-shop-tuido">TÚI ĐỒ (KHO HÀNG)</button>
+                    <button id="btn-shop-hanghoa">HÀNG HÓA</button>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div id="inventory-overlay" class="hidden">
+            <div id="inventory-panel">
+                <div class="inventory-header">
+                    <h2>KHO HÀNG (TÚI ĐỒ)</h2>
+                    <button id="btn-close-inventory" class="close-button">❌</button>
+                </div>
+                
+                <div id="inventory-content">
+                    <div id="inventory-list-container">
+                        <div class="inventory-item-row" data-item-type="consume">
+                            <div class="item-info">
+                                <span>Bánh mì - Số lượng: 30</span>
+                                <p class="item-description">Hàng tồn kho hiện tại.</p>
+                            </div>
+                            <div class="inventory-actions">
+                                <button class="action-button sell-button" data-action="sell">Bán Lại</button>
+                                <button class="action-button inspect-button" data-action="inspect">Kiểm tra</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="inventory-footer">
+                    <p style="color: #4A148C; font-weight: bold; margin: 0;">Quản lý kho hàng và công cụ</p>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div id="haggle-overlay" class="hidden">
+            <div id="haggle-panel">
+                <div class="haggle-header">
+                    <h2>MẶC CẢ VỚI CHỦ CỬA HÀNG</h2>
+                    <button id="btn-close-haggle" class="close-button">❌</button>
+                </div>
+                
+                <div id="haggle-content">
+                    <div id="haggle-selection-list">
+                        <p class="selection-title">Chọn vật phẩm để mặc cả:</p>
+                        <div id="haggle-item-selection-list">
+                            <button class="haggle-select-item" data-item="banh_mi" data-price="50" data-max-discount-percent="50">Bánh mì - Giá: 50$</button>
+                            <button class="haggle-select-item" data-item="nuoc_suoi" data-price="30" data-max-discount-percent="33">Nước suối - Giá: 30$</button>
+                        </div>
+                    </div>
+                    <div id="haggle-detail-panel" class="hidden">
+                        <div id="haggle-item-info">
+                            <h3 id="current-haggle-item-name">Bánh mì</h3>
+                            <p>Giá gốc: <span id="original-price">50$</span> | Giảm tối đa: <span id="max-discount-value">25$ (50%)</span></p>
+                        </div>
+                        <div id="haggle-form">
+                            <div class="input-group">
+                                <label for="input-discount-money">Số tiền giảm ($):</label>
+                                <input type="number" id="input-discount-money" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="result-info">
+                            <p>Tỉ lệ thành công: <span id="success-rate">50%</span></p>
+                            <p>Giá mới: <span id="new-price">50$</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="haggle-footer">
+                    <button id="btn-back-haggle" class="hidden">QUAY LẠI</button>
+                    <button id="btn-confirm-haggle">ĐỒNG Ý MẶC CẢ</button>
+                    <button id="btn-cancel-haggle">HỦY</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="goods-overlay" class="hidden">
+            <div id="goods-panel">
+                <div class="goods-header">
+                    <h2>QUẢN LÝ HÀNG HÓA CỬA HÀNG</h2>
+                    <button id="btn-close-goods" class="close-button">❌</button>
+                </div>
+                
+                <div class="tabs-container">
+                    <button class="tab-button active" data-tab="kho-hang">Kho hàng</button>
+                    <button class="tab-button" data-tab="mo-khoa">Mở khóa vật phẩm</button>
+                </div>
+                
+                <div id="goods-content">
+                    <div id="tab-kho-hang" class="goods-tab active">
+                        <div class="goods-table-header">
+                            <span class="col-name">Tên hàng hóa</span>
+                            <span class="col-price">Giá nhập</span>
+                            <span class="col-stock">Số lượng hiện có</span>
+                            <span class="col-input">Số lượng nhập/trả</span>
+                        </div>
+                        <div id="kho-hang-list">
+                            <div class="goods-item-row">
+                                <span class="col-name">Bánh mì</span>
+                                <span class="col-price">50$</span>
+                                <span class="col-stock">10</span>
+                                <input type="number" value="0" min="-10" class="col-input">
+                            </div>
+                        </div>
+                        <p class="tab-info">Dùng số dương để nhập thêm hàng, số âm để trả lại hàng.</p>
+                    </div>
+                    <div id="tab-mo-khoa" class="goods-tab hidden">
+                        <div id="mo-khoa-list">
+                            <div class="unlock-item-row" data-item="snack">
+                                <span class="unlock-item-name">Snack - Giá mở khóa: 300$</span>
+                                <button class="btn-unlock">Mở khóa</button>
+                            </div>
+                        </div>
+                        <div class="unlock-info-box">
+                            <p class="info-title">Thông tin mở khóa:</p>
+                            <ul>
+                                <li>Mở khóa vật phẩm mới để bán trong cửa hàng.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="goods-footer">
+                    <button id="btn-apply-goods" class="footer-action-button primary">Áp dụng thay đổi</button>
+                    <button id="btn-cancel-goods" class="footer-action-button secondary">Hủy</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="customer-info-overlay" class="hidden">
+            <div id="customer-info-panel">
+                <div class="info-header">
+                    <h2>THÔNG TIN KHÁCH HÀNG HIỆN TẠI</h2>
+                    <button id="btn-close-customer-info" class="close-button">❌</button>
+                </div>
+                
+                <div id="customer-info-content">
+                    <div id="customer-avatar-box">
+                        </div>
+
+                    <div id="customer-details">
+                        <div class="info-row large">
+                            <span class="info-label">Tên khách hàng:</span>
+                            <span id="display-customer-name" class="info-value primary-value">Trần Văn A</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span class="info-label">Mã khách hàng:</span>
+                            <span id="display-customer-id" class="info-value">#CUS1024</span>
+                        </div>
+                        
+                        <div class="info-row half-width">
+                            <span class="info-label">Giới tính:</span>
+                            <span id="display-customer-gender" class="info-value">Nam</span>
+                        </div>
+
+                        <div class="info-row half-width">
+                            <span class="info-label">Tuổi:</span>
+                            <span id="display-customer-age" class="info-value">35</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-footer">
+                    <p>Thông tin này giúp bạn đưa ra quyết định BÁN hoặc KHÔNG.</p>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    
+    <script>
+        // Khai báo các biến DOM cho Panels
+        const shopOverlay = document.getElementById('shop-overlay');
+        const inventoryOverlay = document.getElementById('inventory-overlay');
+        const haggleOverlay = document.getElementById('haggle-overlay');
+        const goodsOverlay = document.getElementById('goods-overlay');
+        const customerInfoOverlay = document.getElementById('customer-info-overlay'); // KHAI BÁO MỚI
+
+        // ------------------ LOGIC MỞ/ĐÓNG PANELS ------------------
+
+        // Mở Shop
+        document.getElementById('btn-shop').addEventListener('click', function() { shopOverlay.classList.remove('hidden'); });
+        // Đóng Shop
+        document.getElementById('btn-close-shop').addEventListener('click', function() { shopOverlay.classList.add('hidden'); });
+
+        // Mở Inventory
+        document.getElementById('btn-shop-tuido').addEventListener('click', function() {
+            shopOverlay.classList.add('hidden'); 
+            inventoryOverlay.classList.remove('hidden'); 
+        });
+        // Đóng Inventory
+        document.getElementById('btn-close-inventory').addEventListener('click', function() { inventoryOverlay.classList.add('hidden'); });
+        
+        // Mở Haggle Panel
+        document.getElementById('btn-shop-macca').addEventListener('click', function() {
+            shopOverlay.classList.add('hidden'); 
+            haggleOverlay.classList.remove('hidden'); 
+        });
+        // Đóng Haggle Panel
+        document.getElementById('btn-close-haggle').addEventListener('click', function() { haggleOverlay.classList.add('hidden'); });
+        document.getElementById('btn-cancel-haggle').addEventListener('click', function() { haggleOverlay.classList.add('hidden'); });
+
+        // Mở Goods Panel (HÀNG HÓA)
+        document.getElementById('btn-shop-hanghoa').addEventListener('click', function() {
+            shopOverlay.classList.add('hidden'); 
+            goodsOverlay.classList.remove('hidden'); 
+        });
+        // Đóng Goods Panel
+        document.getElementById('btn-close-goods').addEventListener('click', function() { goodsOverlay.classList.add('hidden'); });
+        document.getElementById('btn-cancel-goods').addEventListener('click', function() { goodsOverlay.classList.add('hidden'); });
+
+        // Mở Customer Info Panel (THÔNG TIN KHÁCH HÀNG) - LOGIC MỚI
+        document.getElementById('btn-ttkh').addEventListener('click', function() {
+            customerInfoOverlay.classList.remove('hidden'); 
+        });
+
+        // Đóng Customer Info Panel - LOGIC MỚI
+        document.getElementById('btn-close-customer-info').addEventListener('click', function() { customerInfoOverlay.classList.add('hidden'); });
+
+
+        // ------------------ LOGIC CHUYỂN TAB (HÀNG HÓA) ------------------
+        const tabButtons = document.querySelectorAll('#goods-panel .tab-button');
+        const goodsTabs = document.querySelectorAll('#goods-content .goods-tab');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetTabId = this.getAttribute('data-tab');
+
+                goodsTabs.forEach(tab => tab.classList.add('hidden'));
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+
+                document.getElementById('tab-' + targetTabId).classList.remove('hidden');
+                this.classList.add('active');
+            });
+        });
+
+    </script>
+</body>
+</html>

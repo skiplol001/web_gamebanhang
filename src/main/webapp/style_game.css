@@ -1,0 +1,453 @@
+/* ====================================================================
+   THIẾT LẬP CHUNG
+   ==================================================================== */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background-color: #222; 
+}
+
+#main-container {
+    width: 100%;
+    max-width: 800px;
+    height: 100vh; 
+    margin: 0 auto;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    background-color: #3e2723;
+    color: #fff;
+    position: relative; 
+}
+
+/* KHAI BÁO TRANSITION TỔNG THỂ */
+#btn-setting, #action-button, .customer-info-button, #btn-ban, #btn-khong, #btn-shop, #shop-footer button, .buy-button, .action-button, #haggle-footer button {
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease; 
+}
+.hidden { display: none !important; opacity: 0; }
+.close-button { background: none; border: none; font-size: 1.5em; cursor: pointer; color: #333; }
+.close-button:hover { color: #F44336; }
+
+
+/* ====================================================================
+   1. KHU VỰC ĐẦU GAME (TOP-PANEL)
+   ==================================================================== */
+#top-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px;
+    background-color: #5d4037; 
+    border-bottom: 2px solid #000;
+    flex-shrink: 0; 
+}
+.info-group { display: flex; gap: 5px; font-size: 1.1em; }
+.info-group .label { font-weight: bold; color: #ccc; }
+#player-money, #player-name, #game-time { color: #FFD700; }
+#btn-setting { background: none; border: none; font-size: 1.5em; cursor: pointer; color: #fff; }
+#btn-setting:hover { color: #FFEB3B; }
+
+/* ====================================================================
+   2. KHU VỰC CHÍNH (CONTENT VÀ GAME BACKGROUND)
+   ==================================================================== */
+#content-panel { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* NÚT CỬA HÀNG TIỆN LỢI (Tiêu Đề) */
+#shop-button-container { display: block; width: 100%; flex-shrink: 0; }
+#btn-shop {
+    width: 100%; text-align: center; font-size: 1.3em; font-weight: bold;
+    padding: 5px 0; background-color: #8d6e63; color: #fff; border: none;
+    border-bottom: 2px solid #000; cursor: pointer;
+}
+#btn-shop:hover { background-color: #a1887f; }
+
+/* NỀN GAME */
+#game-background {
+    flex-grow: 15; min-height: 400px; position: relative; padding: 0 10px; 
+    background-color: #3e2723; background-image: url('imges/bg_main.jpg'); 
+    background-size: cover; background-position: center; display: block; 
+}
+
+/* Nút Hành động (Khách hàng) */
+#action-button {
+    position: absolute; top: 10%; left: 20px; 
+    height: 75%; width: 200px; 
+    background-color: rgba(189, 10, 10, 0.7); color: white; font-weight: bold; 
+    border: 2px solid #fff; cursor: pointer; text-align: center; padding: 10px; 
+    line-height: 1.4; font-size: 0.9em; box-sizing: border-box; z-index: 20; 
+}
+#action-button:hover { background-color: rgba(255, 60, 60, 0.85); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+
+
+/* ====================================================================
+   KHU VỰC DƯỚI (BOTTOM-PANEL)
+   ==================================================================== */
+#bottom-panel {
+    flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; 
+    padding: 10px; background-color: #3e2723; border-top: 5px solid #000;
+}
+
+/* Nút Thông tin KH và KH trong ngày */
+.customer-info-button {
+    width: 30%; height: 100px; box-sizing: border-box; border: 1px solid #8d6e63; 
+    cursor: pointer; display: flex; flex-direction: column; justify-content: flex-end; 
+    align-items: center; padding-bottom: 5px; color: #fff; font-weight: bold; 
+    background-color: #5d4037; background-repeat: no-repeat; background-size: cover; 
+    background-position: center; 
+}
+#btn-ttkh { background-image: url('imges/btnTTKH.png'); }
+#btn-khtn { background-image: url('imges/btnKHTN.png'); }
+#btn-ttkh:hover, #btn-khtn:hover { border-color: #FFEB3B; box-shadow: 0 0 8px rgba(255, 235, 59, 0.5); }
+
+/* PANEL TƯƠNG TÁC (TINH THẦN VÀ NÚT BÁN/KHÔNG) */
+#interaction-panel { width: 35%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px; background: none; flex-shrink: 0; }
+#spirit-container { display: flex; flex-direction: column; align-items: center; gap: 5px; margin-bottom: 10px; }
+#spirit-label { font-size: 1.1em; font-weight: bold; border: 1px solid #fff; padding: 2px 5px; background-color: #222; }
+#spirit-circle {
+    --progress: 100; --size: 70px; --fill-color: #ff9800; --bg-color: #444; --border-color: #ff9800; 
+    width: var(--size); height: var(--size); border-radius: 50%; position: relative;
+    display: flex; justify-content: center; align-items: center; font-weight: bold;
+    font-size: 1.5em; color: #fff; border: 3px solid var(--border-color);
+    background: conic-gradient(var(--fill-color) calc(var(--progress) * 1%), var(--bg-color) 0%);
+}
+#spirit-value { z-index: 2; font-size: 1em; color: #ff9800; }
+#action-buttons { display: flex; gap: 10px; }
+#btn-ban, #btn-khong { padding: 8px 15px; font-size: 1em; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; }
+#btn-ban { background-color: #4CAF50; color: white; }
+#btn-khong { background-color: #F44336; color: white; }
+#btn-ban:hover { background-color: #64DD17; box-shadow: 0 0 8px rgba(100, 221, 23, 0.7); }
+#btn-khong:hover { background-color: #FF5252; box-shadow: 0 0 8px rgba(244, 67, 54, 0.7); }
+
+/* ====================================================================
+   3. KHU VỰC HỘP THOẠI NHÂN VẬT (DIALOGUE BOX)
+   ==================================================================== */
+#dialogue-box {
+    flex-shrink: 0; width: 100%; min-height: 100px; padding: 20px 15px; padding-top: 70px; 
+    box-sizing: border-box; position: relative; background-color: rgba(43, 27, 21, 0.95); 
+    border-top: 2px solid #000; color: #fff; font-size: 1em; line-height: 1.4; overflow: hidden; 
+}
+#character-name-box {
+    position: absolute; top: 10px; left: 20px; padding: 5px 15px; background-color: #5d4037; 
+    border: 2px solid #000; border-bottom: none; border-radius: 5px 5px 0 0; font-weight: bold; 
+    color: #fff;
+}
+
+/* ====================================================================
+   4. PANEL CỬA HÀNG (SHOP OVERLAY)
+   ==================================================================== */
+#shop-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.95); z-index: 100; display: flex; justify-content: center; align-items: center; }
+#shop-panel { background-color: #B0BEC5; width: 90%; max-width: 600px; height: 80%; border: 5px solid #000; box-shadow: 0 0 20px rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; color: #333; border-radius: 10px; }
+.shop-header { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 2px solid #333; margin-bottom: 10px; flex-shrink: 0; }
+.shop-header h2 { margin: 0; font-size: 1.6em; font-weight: bold; color: #1A237E; }
+#shop-content { flex-grow: 1; overflow-y: auto; padding: 5px; background-color: #CFD8DC; border: 1px solid #777; border-radius: 5px; }
+#item-list-container { display: flex; flex-direction: column; gap: 8px; }
+.shop-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: #ECEFF1; border-bottom: 1px dashed #777; font-size: 1.1em; }
+.item-info { flex-grow: 1; font-weight: 500; }
+.buy-button { padding: 8px 15px; background-color: #388E3C; color: #fff; border: 1px solid #000; cursor: pointer; font-weight: bold; border-radius: 5px; }
+.buy-button:hover:not(:disabled) { background-color: #4CAF50; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4); }
+.buy-button[disabled] { background-color: #B0BEC5; color: #666; cursor: not-allowed; border-color: #999; }
+#shop-footer { display: flex; justify-content: space-around; align-items: center; padding-top: 15px; flex-shrink: 0; }
+#shop-footer button { width: 30%; padding: 10px 0; font-weight: bold; border: 2px solid #000; background-color: #795548; color: #fff; cursor: pointer; border-radius: 5px; box-shadow: 0 3px 0 #3e2723; }
+#shop-footer button:hover { background-color: #8d6e63; box-shadow: 0 2px 0 #3e2723; transform: translateY(1px); }
+
+
+/* ====================================================================
+   5. PANEL TÚI ĐỒ (INVENTORY OVERLAY)
+   ==================================================================== */
+#inventory-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.95); z-index: 100; display: flex; justify-content: center; align-items: center; }
+#inventory-panel { background-color: #B0BEC5; width: 90%; max-width: 600px; height: 80%; border: 5px solid #000; box-shadow: 0 0 20px rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; color: #333; border-radius: 10px; }
+.inventory-header { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 2px solid #333; margin-bottom: 10px; flex-shrink: 0; }
+.inventory-header h2 { margin: 0; font-size: 1.6em; font-weight: bold; color: #4A148C; }
+#inventory-content { flex-grow: 1; overflow-y: auto; padding: 5px; background-color: #CFD8DC; border: 1px solid #777; border-radius: 5px; }
+.inventory-item-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px; background-color: #ECEFF1; border-bottom: 1px dashed #777; font-size: 1.1em; }
+.inventory-item-row .item-info { flex-grow: 1; font-weight: 500; }
+.inventory-actions { display: flex; gap: 5px; flex-shrink: 0; }
+.action-button { padding: 5px 10px; border: 1px solid #000; cursor: pointer; font-weight: bold; font-size: 0.9em; border-radius: 5px; transition: background-color 0.2s; }
+.sell-button { background-color: #FBC02D; color: #333; } 
+.inspect-button { background-color: #1976D2; } 
+.action-button:hover { box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4); transform: translateY(-1px); }
+.sell-button:hover { background-color: #FFEB3B; }
+.inspect-button:hover { background-color: #2196F3; }
+#inventory-footer { display: flex; justify-content: center; align-items: center; padding-top: 15px; flex-shrink: 0; border-top: 1px solid #999; min-height: 40px; }
+
+
+/* ====================================================================
+   6. PANEL MẶC CẢ (HAGGLE OVERLAY) - ĐÃ TỐI ƯU GIAO DIỆN CHỌN MÓN VÀ NÚT
+   ==================================================================== */
+#haggle-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.95); z-index: 100; display: flex; justify-content: center; align-items: center; }
+#haggle-panel { background-color: #ECEFF1; width: 80%; max-width: 450px; height: auto; border: 3px solid #000; box-shadow: 0 0 15px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; color: #333; border-radius: 8px; }
+.haggle-header { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 2px solid #333; margin-bottom: 15px; flex-shrink: 0; }
+.haggle-header h2 { margin: 0; font-size: 1.4em; font-weight: bold; color: #D32F2F; }
+#haggle-content { flex-grow: 1; padding: 10px; background-color: #fff; border: 1px solid #777; border-radius: 5px; }
+
+/* 6A. DANH SÁCH CHỌN MÓN */
+.selection-title { font-weight: bold; color: #1A237E; margin-bottom: 10px; font-size: 1.1em; }
+#haggle-item-selection-list { display: flex; flex-direction: column; gap: 8px; }
+.haggle-select-item {
+    padding: 10px 15px;
+    background-color: #B0BEC5;
+    border: 2px solid #546E7A;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    text-align: left;
+}
+.haggle-select-item:hover {
+    background-color: #CFD8DC;
+    border-color: #D32F2F;
+}
+
+/* 6B. CHI TIẾT MẶC CẢ */
+#haggle-detail-panel { padding-top: 10px; }
+#haggle-item-info { border-bottom: 1px dashed #999; padding-bottom: 10px; margin-bottom: 15px; }
+#haggle-item-info h3 { margin-top: 0; color: #1A237E; }
+#haggle-form { display: flex; flex-direction: column; gap: 15px; }
+.input-group { display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
+.input-group label { flex-basis: 35%; flex-shrink: 0; }
+.input-group input[type="text"], .input-group input[type="number"] { width: 60%; padding: 5px; border: 1px solid #999; border-radius: 3px; text-align: right; font-size: 1em; background-color: #F5F5F5; }
+.slider-group { flex-wrap: wrap; }
+.slider-group input[type="range"] { flex-grow: 1; margin: 0 10px; }
+#display-discount-percent { font-weight: bold; color: #D32F2F; }
+.result-info { border-top: 1px solid #999; padding-top: 10px; margin-top: 15px; }
+.result-info p { margin: 5px 0; display: flex; justify-content: space-between; }
+.result-info p span { font-size: 1.1em; }
+
+/* Footer của Haggle (3 nút) */
+#haggle-footer { display: flex; justify-content: space-between; padding-top: 15px; flex-shrink: 0; }
+#haggle-footer button {
+    width: 30%; /* Chia 3 nút */
+    padding: 10px 0; font-weight: bold; border: 2px solid #5D4037; 
+    color: #fff; cursor: pointer; border-radius: 5px; box-shadow: 0 3px 0 #5D4037;
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+#btn-confirm-haggle { background-color: #D32F2F; } /* Đỏ Mặc Cả */
+#btn-back-haggle { background-color: #1976D2; border-color: #0D47A1; box-shadow: 0 3px 0 #0D47A1; } /* Xanh Dương Quay lại */
+#btn-cancel-haggle { background-color: #757575; border-color: #555; box-shadow: 0 3px 0 #555; } /* Xám Hủy */
+
+#btn-confirm-haggle:hover { background-color: #E53935; box-shadow: 0 1px 0 #5D4037; transform: translateY(2px); }
+#btn-back-haggle:hover { background-color: #2196F3; box-shadow: 0 1px 0 #0D47A1; transform: translateY(2px); }
+#btn-cancel-haggle:hover { background-color: #9E9E9E; box-shadow: 0 1px 0 #555; transform: translateY(2px); }
+/* ====================================================================
+   7. PANEL HÀNG HÓA (GOODS OVERLAY)
+   ==================================================================== */
+#goods-overlay { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    background-color: rgba(0, 0, 0, 0.95); z-index: 100; 
+    display: flex; justify-content: center; align-items: center; 
+}
+#goods-panel { 
+    background-color: #B0BEC5; width: 90%; max-width: 650px; height: 85%; 
+    border: 5px solid #000; box-shadow: 0 0 20px rgba(0, 0, 0, 0.9); 
+    display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; 
+    color: #333; border-radius: 10px; 
+}
+.goods-header { 
+    display: flex; justify-content: space-between; align-items: center; 
+    padding: 5px 0; border-bottom: 2px solid #333; flex-shrink: 0; 
+}
+.goods-header h2 { margin: 0; font-size: 1.6em; font-weight: bold; color: #004D40; }
+
+/* Tabs Navigation */
+.tabs-container { 
+    display: flex; margin-bottom: 10px; flex-shrink: 0; 
+    border-bottom: 2px solid #555;
+}
+.tab-button {
+    padding: 10px 20px; font-size: 1.1em; font-weight: bold; cursor: pointer;
+    background-color: #CFD8DC; border: 2px solid #78909C; border-bottom: none;
+    border-radius: 5px 5px 0 0; margin-right: 5px; color: #546E7A;
+    transition: background-color 0.2s, color 0.2s;
+}
+.tab-button.active {
+    background-color: #fff; color: #004D40; border-color: #004D40;
+    z-index: 1; /* Đẩy tab đang active lên trên */
+}
+.tab-button:not(.active):hover { background-color: #ECEFF1; }
+
+#goods-content { 
+    flex-grow: 1; overflow-y: auto; padding: 10px; 
+    background-color: #fff; border: 1px solid #777; border-radius: 0 5px 5px 5px; 
+    position: relative; /* Quan trọng cho việc chứa các tab */
+}
+.goods-tab { 
+    position: relative; padding: 5px; height: 100%; box-sizing: border-box;
+}
+.tab-info { font-size: 0.9em; color: #555; margin-top: 15px; }
+
+
+/* Tab 1: KHO HÀNG (Nhập/Trả) */
+.goods-table-header {
+    display: flex; font-weight: bold; background-color: #E0F2F1; 
+    padding: 10px; border-bottom: 2px solid #004D40; margin-bottom: 5px;
+}
+.goods-item-row {
+    display: flex; align-items: center; padding: 8px 10px; 
+    border-bottom: 1px dashed #BDBDBD;
+}
+.col-name { flex-basis: 35%; font-weight: 600; }
+.col-price { flex-basis: 20%; text-align: center; }
+.col-stock { flex-basis: 25%; text-align: center; color: #D32F2F; font-weight: bold; }
+.col-input { flex-basis: 20%; text-align: right; }
+
+.goods-item-row .col-input {
+    width: 80%; padding: 5px; border: 1px solid #999; border-radius: 3px; 
+    box-sizing: border-box; font-size: 1em; text-align: center;
+}
+
+
+/* Tab 2: MỞ KHÓA VẬT PHẨM */
+#mo-khoa-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.unlock-item-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 15px; background-color: #F5F5F5; border: 1px solid #BDBDBD; 
+    border-radius: 5px; font-size: 1.1em;
+}
+.unlock-item-name { font-weight: 500; color: #333; }
+.btn-unlock {
+    padding: 8px 15px; background-color: #FF9800; color: white; 
+    border: none; cursor: pointer; font-weight: bold; border-radius: 5px;
+    box-shadow: 0 3px 0 #E65100;
+}
+.btn-unlock:hover { 
+    background-color: #FFB74D; box-shadow: 0 1px 0 #E65100; transform: translateY(2px); 
+}
+
+.unlock-info-box {
+    padding: 15px; border: 2px solid #004D40; background-color: #E0F2F1; 
+    border-radius: 5px;
+}
+.info-title { font-weight: bold; color: #004D40; margin-top: 0; }
+.unlock-info-box ul { margin: 5px 0 0 15px; padding: 0; list-style-type: disc; }
+.unlock-info-box li { margin-bottom: 5px; font-size: 0.95em; }
+
+
+/* Footer Hàng hóa */
+.goods-footer { 
+    display: flex; justify-content: center; gap: 20px; padding-top: 15px; 
+    flex-shrink: 0; border-top: 1px solid #777; 
+}
+.footer-action-button {
+    width: 40%; padding: 10px 0; font-weight: bold; border: 2px solid; 
+    color: #fff; cursor: pointer; border-radius: 5px; box-shadow: 0 3px 0;
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.footer-action-button.primary { 
+    background-color: #4CAF50; border-color: #2E7D32; box-shadow: 0 3px 0 #2E7D32; 
+}
+.footer-action-button.secondary { 
+    background-color: #757575; border-color: #555; box-shadow: 0 3px 0 #555; 
+}
+.footer-action-button.primary:hover { 
+    background-color: #66BB6A; box-shadow: 0 1px 0 #2E7D32; transform: translateY(2px); 
+}
+.footer-action-button.secondary:hover { 
+    background-color: #9E9E9E; box-shadow: 0 1px 0 #555; transform: translateY(2px); 
+}
+
+/* Đảm bảo các tab ban đầu ẩn */
+#tab-mo-khoa { display: none; } /* CSS để ẩn ban đầu, sẽ được JS điều chỉnh */
+.goods-tab.hidden { display: none !important; }
+/* ====================================================================
+   8. PANEL THÔNG TIN KHÁCH HÀNG (CUSTOMER INFO OVERLAY)
+   ==================================================================== */
+#customer-info-overlay { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    background-color: rgba(0, 0, 0, 0.95); z-index: 100; 
+    display: flex; justify-content: center; align-items: center; 
+}
+#customer-info-panel { 
+    background-color: #ECEFF1; width: 85%; max-width: 500px; height: auto; 
+    min-height: 350px; /* Điều chỉnh lại chiều cao tối thiểu */
+    border: 5px solid #000; box-shadow: 0 0 15px rgba(0, 0, 0, 0.7); 
+    display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; 
+    color: #333; border-radius: 8px; 
+}
+.info-header { 
+    display: flex; justify-content: space-between; align-items: center; 
+    padding: 5px 0; border-bottom: 2px solid #333; margin-bottom: 15px; flex-shrink: 0; 
+}
+.info-header h2 { margin: 0; font-size: 1.4em; font-weight: bold; color: #1A237E; }
+
+#customer-info-content {
+    flex-grow: 1; 
+    display: flex; 
+    padding: 15px; 
+    background-color: #fff; 
+    border: 1px solid #777; 
+    border-radius: 5px; 
+    gap: 25px; /* Tăng khoảng cách giữa avatar và chi tiết */
+}
+
+/* Khu vực Avatar (Hình tròn) */
+#customer-avatar-box {
+    width: 130px; 
+    height: 130px; 
+    border-radius: 50%; 
+    background-color: #B0BEC5; /* Màu nền xám/trung tính */
+    border: 3px solid #1A237E; 
+    flex-shrink: 0; 
+    overflow: hidden; 
+    margin-top: 5px;
+}
+
+/* Khu vực Chi tiết */
+#customer-details {
+    flex-grow: 1; 
+    display: flex; 
+    flex-wrap: wrap; 
+    align-content: flex-start; 
+}
+
+.info-row {
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    margin-bottom: 10px; 
+    font-size: 1.1em;
+}
+.info-row.large { margin-bottom: 15px; }
+
+/* Dùng cho Giới tính & Tuổi để chúng nằm cạnh nhau */
+.info-row.half-width {
+    width: calc(50% - 10px); 
+    margin-right: 20px; 
+    margin-bottom: 10px; 
+}
+.info-row.half-width:last-child {
+    margin-right: 0;
+}
+
+.info-row .info-label {
+    font-weight: bold; 
+    color: #546E7A; 
+    font-size: 0.85em;
+    margin-bottom: 2px;
+}
+.info-row .info-value {
+    padding: 5px 8px;
+    border: 1px solid #999;
+    border-radius: 3px;
+    background-color: #F5F5F5;
+    font-weight: 600;
+}
+.info-row .primary-value {
+    color: #D32F2F; /* Màu đỏ nổi bật cho Tên */
+    font-size: 1.2em;
+}
+
+/* Footer TTKH */
+.info-footer {
+    padding-top: 10px;
+    margin-top: 15px;
+    border-top: 1px solid #777;
+    text-align: center;
+    font-style: italic;
+    color: #555;
+    flex-shrink: 0;
+}

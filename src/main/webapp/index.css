@@ -1,0 +1,73 @@
+/* Thiết lập cho thẻ HTML và BODY để đảm bảo 100% chiều cao màn hình */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Cần thiết để 100vh hoạt động tốt hơn trên một số trình duyệt */
+    overflow: hidden; /* Ngăn cuộn trang nếu không cần thiết */
+    background-color: #000; /* Màu nền dự phòng cho toàn bộ màn hình */
+}
+
+/* Phần tử chứa toàn bộ màn hình menu */
+#main-menu {
+    width: 100%;
+    height: 100%;
+    /* Sử dụng hình ảnh nền */
+       background-image: url('imges/bg_menu.png'); /* Đảm bảo đường dẫn chính xác */
+    background-size: cover; /* Đảm bảo ảnh nền phủ kín */
+    background-position: center;
+    position: relative; /* Quan trọng cho việc định vị menu-container */
+
+    /* LOẠI BỎ thuộc tính 'display: flex' ở body, và áp dụng nó ở đây nếu cần căn giữa MỘT phần tử duy nhất,
+       nhưng vì menu-container đã dùng absolute, nên ta không cần flexbox ở đây. */
+}
+
+/* Khối chứa các nút */
+#menu-container {
+    /* Điều chỉnh kích thước và vị trí theo hình ảnh mô tả */
+    width: 250px; /* Chiều rộng của khối menu */
+    height: 400px; /* Chiều cao của khối menu */
+    position: absolute; /* Định vị tuyệt đối so với #main-menu */
+    top: 50%; /* Dịch chuyển xuống giữa */
+    left: 100px; /* Vị trí cách lề trái (giữ nguyên vị trí ban đầu của bạn) */
+    transform: translateY(-50%); /* Căn giữa theo chiều dọc */
+    padding: 20px;
+    
+    /* Căn chỉnh các nút bên trong */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around; /* Phân bổ không gian đều giữa các nút */
+    align-items: center;
+    /* KHUYẾN NGHỊ: Thêm màu nền hoặc box-shadow để khối menu nổi bật trên ảnh nền */
+    /* background-color: rgba(0, 0, 0, 0.7); */
+    /* border-radius: 10px; */
+}
+
+/* Kiểu dáng cho các nút */
+.menu-button {
+    width: 100%;
+    padding: 15px 10px;
+    margin: 10px 0;
+    
+    font-size: 1.2em;
+    font-family: 'Arial', sans-serif; /* Nên chỉ định font rõ ràng hơn */
+    color: #fff;
+    
+    background-color: #333;
+    border: 2px solid #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+/* Hiệu ứng khi di chuột (hover) */
+.menu-button:hover {
+    background-color: #555;
+    transform: scale(1.05);
+    border-color: #f00; /* Ví dụ đổi màu viền khi hover */
+}
+
+/* Hiệu ứng khi nhấn (active) */
+.menu-button:active {
+    background-color: #000;
+    transform: scale(1.0);
+}

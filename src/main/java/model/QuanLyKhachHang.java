@@ -16,27 +16,27 @@ public class QuanLyKhachHang {
         try (Connection conn = dataSource.getConnection()) {
             Statement stmt = conn.createStatement();
             
-            String createKhachHangThatTable = """
-                CREATE TABLE IF NOT EXISTS khach_hang_that (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    ten VARCHAR(100) NOT NULL,
-                    tuoi INT NOT NULL,
-                    gioi_tinh VARCHAR(10) NOT NULL,
-                    ma_kh VARCHAR(20) NOT NULL UNIQUE
-                )
-            """;
+            // Chuyển từ Text Block sang chuỗi nối chuỗi (String Concatenation)
+            String createKhachHangThatTable = 
+                "CREATE TABLE IF NOT EXISTS khach_hang_that (" +
+                "    id INT AUTO_INCREMENT PRIMARY KEY," +
+                "    ten VARCHAR(100) NOT NULL," +
+                "    tuoi INT NOT NULL," +
+                "    gioi_tinh VARCHAR(10) NOT NULL," +
+                "    ma_kh VARCHAR(20) NOT NULL UNIQUE" +
+                ")";
             
-            String createKhachHangTable = """
-                CREATE TABLE IF NOT EXISTS khach_hang (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    ten VARCHAR(100) NOT NULL,
-                    tuoi INT NOT NULL,
-                    gioi_tinh VARCHAR(10) NOT NULL,
-                    ma_kh VARCHAR(20) NOT NULL,
-                    la_vong BOOLEAN NOT NULL,
-                    ngay_tao DATE DEFAULT CURDATE()
-                )
-            """;
+            // Chuyển từ Text Block sang chuỗi nối chuỗi (String Concatenation)
+            String createKhachHangTable = 
+                "CREATE TABLE IF NOT EXISTS khach_hang (" +
+                "    id INT AUTO_INCREMENT PRIMARY KEY," +
+                "    ten VARCHAR(100) NOT NULL," +
+                "    tuoi INT NOT NULL," +
+                "    gioi_tinh VARCHAR(10) NOT NULL," +
+                "    ma_kh VARCHAR(20) NOT NULL," +
+                "    la_vong BOOLEAN NOT NULL," +
+                "    ngay_tao DATE DEFAULT CURDATE()" +
+                ")";
             
             stmt.execute(createKhachHangThatTable);
             stmt.execute(createKhachHangTable);
@@ -57,11 +57,13 @@ public class QuanLyKhachHang {
             
             return rs.next() && rs.getInt(1) == 0;
         } catch (SQLException e) {
-            return true;
+            // Nếu có lỗi SQL (ví dụ: bảng chưa tồn tại), coi như trống để chèn dữ liệu mặc định
+            return true; 
         }
     }
 
     private void insertDefaultKhachHangThat() {
+        // Giả định class KhachHang có constructor phù hợp
         List<KhachHang> defaultCustomers = Arrays.asList(
             new KhachHang("Liễu Như Yên", 25, "Nữ", "KH001", false),
             new KhachHang("Tạ Minh Kha", 30, "Nam", "KH002", false),
@@ -97,20 +99,23 @@ public class QuanLyKhachHang {
              ResultSet rs = stmt.executeQuery("SELECT * FROM khach_hang_that")) {
             
             while (rs.next()) {
+                // Tỷ lệ xuất hiện "Khách Hàng Vòng" là 30%
                 boolean laVong = random.nextDouble() < 0.3;
 
                 if (laVong) {
+                    // Tạo thông tin ngẫu nhiên cho Khách Vòng
                     int tuoiVong = 100 + random.nextInt(100);
                     String maVong = "V" + (1000 + random.nextInt(9000));
                     
                     result.add(new KhachHang(
-                        rs.getString("ten"),
+                        rs.getString("ten"), // Vẫn lấy tên của khách hàng thật làm tên giả
                         tuoiVong,
                         rs.getString("gioi_tinh"),
                         maVong,
                         true
                     ));
                 } else {
+                    // Khách hàng thật
                     result.add(new KhachHang(
                         rs.getString("ten"),
                         rs.getInt("tuoi"),
@@ -150,7 +155,8 @@ public class QuanLyKhachHang {
 
     public List<KhachHang> taiDanhSachKhachHang() {
         List<KhachHang> result = new ArrayList<>();
-        String sql = "SELECT * FROM khach_hang WHERE ngay_tao = CURDATE()";
+        // Sử dụng CURDATE() để lấy danh sách khách hàng của ngày hiện tại
+        String sql = "SELECT * FROM khach_hang WHERE ngay_tao = CURDATE()"; 
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -170,7 +176,9 @@ public class QuanLyKhachHang {
         }
 
         if (result.isEmpty()) {
-            return layDanhSachKhachHangHomNay();
+            // Nếu chưa có danh sách khách hàng được tạo và lưu trong ngày hôm nay, 
+            // thì tạo mới và lưu lại
+            return layDanhSachKhachHangHomNay(); 
         }
         
         return result;
@@ -190,7 +198,7 @@ public class QuanLyKhachHang {
                     rs.getInt("tuoi"),
                     rs.getString("gioi_tinh"),
                     rs.getString("ma_kh"),
-                    false
+                    false // Luôn là khách hàng thật
                 ));
             }
         } catch (SQLException e) {

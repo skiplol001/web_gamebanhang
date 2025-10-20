@@ -1,45 +1,73 @@
-/* Thiết lập cho thẻ HTML và BODY để đảm bảo 100% chiều cao màn hình */
+/* Cài đặt chung */
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%; /* Cần thiết để 100vh hoạt động tốt hơn trên một số trình duyệt */
-    overflow: hidden; /* Ngăn cuộn trang nếu không cần thiết */
-    background-color: #000; /* Màu nền dự phòng cho toàn bộ màn hình */
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
 }
 
-/* Phần tử chứa toàn bộ màn hình menu */
+/* Container chính của màn hình menu */
 #main-menu {
     width: 100%;
     height: 100%;
-    /* Sử dụng hình ảnh nền */
-       background-image: url('imges/bg_menu.png'); /* Đảm bảo đường dẫn chính xác */
-    background-size: cover; /* Đảm bảo ảnh nền phủ kín */
+    
+    /* ĐƯỜNG DẪN HÌNH ẢNH: Đảm bảo ảnh nằm ở /game-banhang/imges/bg_menu.png */
+    /* Nếu bạn đã dùng EL trong JSP, đường dẫn tương đối này (từ Context Root) có thể hoạt động */
+    /* TỐT NHẤT LÀ DÙNG ĐƯỜNG DẪN TUYỆT ĐỐI ĐÃ KHẮC PHỤC LỖI TRƯỚC ĐÓ: */
+    background-image: url('/game-banhang/imges/bg_menu.png'); 
+    
+    background-size: cover;
     background-position: center;
-    position: relative; /* Quan trọng cho việc định vị menu-container */
-
-    /* LOẠI BỎ thuộc tính 'display: flex' ở body, và áp dụng nó ở đây nếu cần căn giữa MỘT phần tử duy nhất,
-       nhưng vì menu-container đã dùng absolute, nên ta không cần flexbox ở đây. */
+    position: relative; 
+    display: flex; /* Dùng flexbox để căn chỉnh nội dung */
+    justify-content: flex-start; /* Nội dung ở bên trái */
+    align-items: center;
 }
 
-/* Khối chứa các nút */
+/* ------------------------------------------- */
+/* TÊN GAME: Vị trí và Hiệu ứng Vàng Mờ */
+/* ------------------------------------------- */
+#game-title {
+    position: absolute;
+    
+    /* VỊ TRÍ: Góc phải, căn giữa (tương đối) */
+    top: 50%; 
+    left: 65%; 
+    transform: translate(-50%, -50%); /* Căn giữa hoàn hảo */
+    
+    /* KIỂU DÁNG */
+    font-size: 3.5em; 
+    font-family: 'Times New Roman', serif; 
+    color: #FFFFFF; /* CHỮ MÀU TRẮNG */
+    text-align: center;
+    white-space: nowrap;
+    
+    /* HIỆU ỨNG VIỀN VÀNG NHẠT CÓ ĐỘ MỜ (Glow effect) */
+    text-shadow: 
+        0 0 10px rgba(255, 255, 150, 0.8), 
+        0 0 20px rgba(255, 255, 150, 0.6),
+        0 0 30px rgba(255, 255, 150, 0.4), 
+        0 0 4px #000; /* Bóng đen nhỏ làm nổi bật */
+    
+    z-index: 10;
+}
+
+
+/* Khối chứa các nút menu */
 #menu-container {
-    /* Điều chỉnh kích thước và vị trí theo hình ảnh mô tả */
-    width: 250px; /* Chiều rộng của khối menu */
-    height: 400px; /* Chiều cao của khối menu */
-    position: absolute; /* Định vị tuyệt đối so với #main-menu */
-    top: 50%; /* Dịch chuyển xuống giữa */
-    left: 100px; /* Vị trí cách lề trái (giữ nguyên vị trí ban đầu của bạn) */
-    transform: translateY(-50%); /* Căn giữa theo chiều dọc */
+    width: 250px; 
+    height: 400px; 
+    position: absolute; 
+    top: 50%; 
+    left: 100px; 
+    transform: translateY(-50%);
     padding: 20px;
     
-    /* Căn chỉnh các nút bên trong */
     display: flex;
     flex-direction: column;
-    justify-content: space-around; /* Phân bổ không gian đều giữa các nút */
+    justify-content: space-around; 
     align-items: center;
-    /* KHUYẾN NGHỊ: Thêm màu nền hoặc box-shadow để khối menu nổi bật trên ảnh nền */
-    /* background-color: rgba(0, 0, 0, 0.7); */
-    /* border-radius: 10px; */
 }
 
 /* Kiểu dáng cho các nút */
@@ -49,7 +77,7 @@ html, body {
     margin: 10px 0;
     
     font-size: 1.2em;
-    font-family: 'Arial', sans-serif; /* Nên chỉ định font rõ ràng hơn */
+    font-family: 'Arial', sans-serif; 
     color: #fff;
     
     background-color: #333;
@@ -59,14 +87,12 @@ html, body {
     transition: background-color 0.3s, transform 0.1s;
 }
 
-/* Hiệu ứng khi di chuột (hover) */
 .menu-button:hover {
     background-color: #555;
     transform: scale(1.05);
-    border-color: #f00; /* Ví dụ đổi màu viền khi hover */
+    border-color: #f00; 
 }
 
-/* Hiệu ứng khi nhấn (active) */
 .menu-button:active {
     background-color: #000;
     transform: scale(1.0);

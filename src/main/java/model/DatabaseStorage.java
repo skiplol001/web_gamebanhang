@@ -1,11 +1,10 @@
 package model;
 
-import model.PlayerData;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import model.PlayerData;
+// import model.PlayerData; - Đã có ở đầu, không cần import lại
 
 public class DatabaseStorage {
     private DataSource dataSource;
@@ -16,27 +15,27 @@ public class DatabaseStorage {
     }
 
     private void initPlayerTable() {
-        String sql = """
-            CREATE TABLE IF NOT EXISTS player_data (
-                player_id VARCHAR(50) PRIMARY KEY,
-                money INT DEFAULT 1000,
-                mental_points INT DEFAULT 100,
-                current_day INT DEFAULT 1,
-                created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            )
-        """;
+        // Chuyển từ Text Block sang chuỗi nối chuỗi (String Concatenation)
+        String sql = 
+            "CREATE TABLE IF NOT EXISTS player_data (" +
+            "    player_id VARCHAR(50) PRIMARY KEY," +
+            "    money INT DEFAULT 1000," +
+            "    mental_points INT DEFAULT 100," +
+            "    current_day INT DEFAULT 1," +
+            "    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+            "    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
+            ")";
         
-        String inventorySql = """
-            CREATE TABLE IF NOT EXISTS player_inventory (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                player_id VARCHAR(50),
-                item_name VARCHAR(100),
-                quantity INT,
-                FOREIGN KEY (player_id) REFERENCES player_data(player_id),
-                UNIQUE KEY unique_player_item (player_id, item_name)
-            )
-        """;
+        // Chuyển từ Text Block sang chuỗi nối chuỗi (String Concatenation)
+        String inventorySql = 
+            "CREATE TABLE IF NOT EXISTS player_inventory (" +
+            "    id INT AUTO_INCREMENT PRIMARY KEY," +
+            "    player_id VARCHAR(50)," +
+            "    item_name VARCHAR(100)," +
+            "    quantity INT," +
+            "    FOREIGN KEY (player_id) REFERENCES player_data(player_id)," +
+            "    UNIQUE KEY unique_player_item (player_id, item_name)" +
+            ")";
 
         try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement()) {
@@ -105,14 +104,14 @@ public class DatabaseStorage {
     }
 
     public static void savePlayerData(String playerId, PlayerData playerData, DataSource dataSource) {
-        String updatePlayerSql = """
-            INSERT INTO player_data (player_id, money, mental_points, current_day) 
-            VALUES (?, ?, ?, ?) 
-            ON DUPLICATE KEY UPDATE 
-            money = VALUES(money), 
-            mental_points = VALUES(mental_points), 
-            current_day = VALUES(current_day)
-        """;
+        // Chuyển từ Text Block sang chuỗi nối chuỗi (String Concatenation)
+        String updatePlayerSql = 
+            "INSERT INTO player_data (player_id, money, mental_points, current_day) " + 
+            "VALUES (?, ?, ?, ?) " + 
+            "ON DUPLICATE KEY UPDATE " + 
+            "money = VALUES(money), " + 
+            "mental_points = VALUES(mental_points), " + 
+            "current_day = VALUES(current_day)";
         
         String deleteInventorySql = "DELETE FROM player_inventory WHERE player_id = ?";
         String insertInventorySql = "INSERT INTO player_inventory (player_id, item_name, quantity) VALUES (?, ?, ?)";

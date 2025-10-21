@@ -8,11 +8,14 @@
     
     <link rel="stylesheet" href="${pageContext.request.contextPath}/index.css"> 
     
+   <style>
+       <%@include file="index.css" %>
+    </style>
 </head>
 <body>
     <div id="main-menu">
         
-        <h1 id="game-title">MÙ ph?ng b·n h‡ng</h1>
+        <h1 id="game-title">M√¥ ph·ªèng b√°n h√†ng</h1>
         
         <div id="menu-container">
             <a href="${pageContext.request.contextPath}/Menu?action=new">

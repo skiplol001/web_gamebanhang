@@ -47,6 +47,11 @@ public class GameTimeManager {
     public int getCurrentDay() {
         return currentDay;
     }
+    
+    // Bổ sung: thiết lập ngày chơi khi load game
+    public void setCurrentDay(int day) {
+        this.currentDay = day;
+    }
 
     public void startTimer() {
         gameStartTime = System.currentTimeMillis();
@@ -57,7 +62,7 @@ public class GameTimeManager {
 
     public void stopTimer() {
         if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdown();
+            scheduler.shutdownNow(); // Sử dụng shutdownNow để dừng ngay lập tức
         }
     }
 
@@ -77,10 +82,11 @@ public class GameTimeManager {
             specialHourListener.onSpecialHour(0);
         }
 
+        // Điều kiện kết thúc ngày: khi giờ game chạm đến endHour (3:00)
         if (hours == endHour && minutes == 0) {
             if (dayEndListener != null) {
                 dayEndListener.onDayEnd();
-                currentDay++;
+                // currentDay++; // Việc tăng ngày sẽ do Controller/Player quản lý
             }
             stopTimer();
             return;
@@ -122,6 +128,7 @@ public class GameTimeManager {
     }
 
     public void fastForwardToNearEnd() {
+        // Tăng gameStartTime để thời gian giả lập gần hết ngày (cách 1 phút)
         long almostFullDay = gameDayLength - (1 * 60 * 10);
         gameStartTime = System.currentTimeMillis() - (long) (almostFullDay / TIME_SCALE);
     }

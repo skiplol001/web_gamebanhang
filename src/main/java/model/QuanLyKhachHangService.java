@@ -1,5 +1,9 @@
 package model;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.*;
 import javax.sql.DataSource;
 
@@ -8,70 +12,113 @@ public class QuanLyKhachHangService {
     private final QuanLyKhachHang quanLyKH;
     private final Random random;
     private List<String> danhSachVatPham;
-    private Map<String, Integer> giaVatPham;
+    private Map<String, Integer> giaVatPham; // Tên SP -> Giá Bán
+    private Map<String, Item> itemData; // Tên SP -> Item object
 
     public QuanLyKhachHangService(DataSource dataSource) {
         this.quanLyKH = new QuanLyKhachHang(dataSource);
         this.random = new Random();
         this.danhSachVatPham = new ArrayList<>();
         this.giaVatPham = new HashMap<>();
-        taiDanhSachVatPhamTuDatabase(dataSource);
+        this.itemData = new HashMap<>();
+        initVatPhamMacDinh(dataSource); // Gọi init trước
+        taiDanhSachVatPhamTuDatabase(dataSource); // Sau đó load từ DB
     }
-
-    private void taiDanhSachVatPhamTuDatabase(DataSource dataSource) {
-        String sql = "SELECT ten_vat_pham, gia FROM vat_pham";
-        
-        try (var conn = dataSource.getConnection();
-             var stmt = conn.createStatement();
-             var rs = stmt.executeQuery(sql)) {
-            
-            while (rs.next()) {
-                String tenVatPham = rs.getString("ten_vat_pham");
-                int gia = rs.getInt("gia");
-                danhSachVatPham.add(tenVatPham);
-                giaVatPham.put(tenVatPham, gia);
-            }
-            
-            if (danhSachVatPham.isEmpty()) {
-                initVatPhamMacDinh(dataSource);
-            }
-            
-        } catch (Exception e) {
-            initVatPhamMacDinh(dataSource);
-        }
-    }
-
+    
+    // Khởi tạo bảng Vat_Pham và chèn dữ liệu mặc định nếu cần
     private void initVatPhamMacDinh(DataSource dataSource) {
-        Map<String, Integer> defaultItems = Map.of(
-            "Snack", 20,
-            "Thuốc", 100,
-            "Nước suối", 30,
-            "Bánh mì", 50
+        // Cần tạo bảng Vat_Pham trước nếu chưa có
+        String createTableSql = 
+            "CREATE TABLE IF NOT EXISTS Vat_Pham (" +
+            "   Ma_SP INT AUTO_INCREMENT PRIMARY KEY," + // Dùng AUTO_INCREMENT
+            "   Ten_SP NVARCHAR(100) UNIQUE NOT NULL," +
+            "   Gia_Ban INT," +
+            "   Gia_Mo_Khoa INT DEFAULT 0," +
+            "   Gia_Nhap INT DEFAULT 0," +
+            "   Mo_Ta NVARCHAR(255)," +
+            "   Loai VARCHAR(50) DEFAULT 'goods'" +
+            ")";
+        
+        // Dữ liệu mặc định
+        List<Item> defaultItems = Arrays.asList(
+            new Item("Bánh mì", 50, 0, 30, "Món ăn nhẹ lót dạ.", "goods"),
+            new Item("Nước suối", 30, 0, 15, "Giải khát đơn giản.", "goods"),
+            new Item("Thuốc", 100, 0, 60, "Có thể giúp tăng cường tinh thần.", "consume"),
+            new Item("Snack", 20, 0, 10, "Đồ ăn vặt yêu thích.", "goods"),
+            new Item("Cà phê", 80, 500, 40, "Giúp tỉnh táo, cần mở khóa.", "goods"),
+            new Item("Bánh ngọt", 60, 0, 35, "Thức ăn nhanh có đường.", "goods")
         );
 
-        String sql = "INSERT INTO vat_pham (ten_vat_pham, gia) VALUES (?, ?)";
+        String insertSql = "INSERT IGNORE INTO Vat_Pham (Ten_SP, Gia_Ban, Gia_Mo_Khoa, Gia_Nhap, Mo_Ta, Loai) VALUES (?, ?, ?, ?, ?, ?)";
         
-        try (var conn = dataSource.getConnection();
-             var pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement();
+             PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
             
-            for (var entry : defaultItems.entrySet()) {
-                pstmt.setString(1, entry.getKey());
-                pstmt.setInt(2, entry.getValue());
+            // 1. Đảm bảo bảng tồn tại
+            stmt.execute(createTableSql); 
+
+            // 2. Chèn dữ liệu (sử dụng INSERT IGNORE hoặc ON DUPLICATE KEY UPDATE)
+            for (Item item : defaultItems) {
+                pstmt.setString(1, item.getName());
+                pstmt.setInt(2, item.getPrice());
+                pstmt.setInt(3, item.getUnlockPrice());
+                pstmt.setInt(4, item.getBaseCost());
+                pstmt.setString(5, item.getDescription());
+                pstmt.setString(6, item.getType());
                 pstmt.addBatch();
-                
-                danhSachVatPham.add(entry.getKey());
-                giaVatPham.put(entry.getKey(), entry.getValue());
             }
             pstmt.executeBatch();
         } catch (Exception e) {
-            danhSachVatPham = new ArrayList<>(defaultItems.keySet());
-            giaVatPham = new HashMap<>(defaultItems);
+            // Trường hợp lỗi (ví dụ: DB không chạy), vẫn giữ dữ liệu trong RAM để game chạy tạm thời
+            for (Item item : defaultItems) {
+                 danhSachVatPham.add(item.getName());
+                 giaVatPham.put(item.getName(), item.getPrice());
+                 itemData.put(item.getName(), item);
+            }
         }
     }
 
-    private HashMap<String, Integer> generateRandomYeuCauMap() {
-        HashMap<String, Integer> requiredItems = new HashMap<>();
 
+    private void taiDanhSachVatPhamTuDatabase(DataSource dataSource) {
+        // Tên cột đã sửa: Ten_SP, Gia_Ban, Gia_Mo_Khoa, Gia_Nhap, Mo_Ta, Loai
+        String sql = "SELECT Ten_SP, Gia_Ban, Gia_Mo_Khoa, Gia_Nhap, Mo_Ta, Loai FROM Vat_Pham";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql); 
+             ResultSet rs = pstmt.executeQuery()) { 
+            
+            danhSachVatPham.clear();
+            giaVatPham.clear();
+            itemData.clear();
+            
+            while (rs.next()) {
+                String tenVatPham = rs.getString("Ten_SP");
+                int giaBan = rs.getInt("Gia_Ban");
+                
+                Item item = new Item(
+                    tenVatPham, 
+                    giaBan, 
+                    rs.getInt("Gia_Mo_Khoa"), 
+                    rs.getInt("Gia_Nhap"), 
+                    rs.getString("Mo_Ta"),
+                    rs.getString("Loai")
+                );
+                
+                danhSachVatPham.add(tenVatPham);
+                giaVatPham.put(tenVatPham, giaBan);
+                itemData.put(tenVatPham, item);
+            }
+            
+        } catch (Exception e) {
+            // Lỗi khi load, có thể do kết nối, không cần làm gì thêm vì đã có initDefault
+        }
+    }
+
+    private Map<String, Integer> generateRandomYeuCauMap() {
+        Map<String, Integer> requiredItems = new HashMap<>();
+
+        // Chỉ tạo yêu cầu từ các vật phẩm đã được load (tức là có trong DB)
         if (danhSachVatPham.isEmpty()) {
             return requiredItems;
         }
@@ -79,6 +126,7 @@ public class QuanLyKhachHangService {
         List<String> vatPhamList = new ArrayList<>(danhSachVatPham);
         Collections.shuffle(vatPhamList);
 
+        // Khách hàng yêu cầu 1 đến 4 vật phẩm
         int soLuongVatPham = random.nextInt(Math.min(4, vatPhamList.size())) + 1;
 
         for (int i = 0; i < soLuongVatPham; i++) {
@@ -90,7 +138,7 @@ public class QuanLyKhachHangService {
     }
 
     public KhachHang taoKhachHangMoi() {
-        List<KhachHang> danhSach = quanLyKH.layDanhSachKhachHangHomNay();
+        List<KhachHang> danhSach = quanLyKH.taiDanhSachKhachHang();
         if (danhSach != null && !danhSach.isEmpty()) {
             KhachHang khachMoi = danhSach.get(random.nextInt(danhSach.size()));
             khachMoi.setVatPhamYeuCau(generateRandomYeuCauMap());
@@ -105,7 +153,7 @@ public class QuanLyKhachHangService {
             return "Chưa có yêu cầu";
         }
         StringBuilder yeuCau = new StringBuilder("Tôi muốn mua: ");
-        HashMap<String, Integer> vatPham = khachHangHienTai.getVatPhamYeuCau();
+        Map<String, Integer> vatPham = khachHangHienTai.getVatPhamYeuCau();
         int count = 0;
         for (Map.Entry<String, Integer> entry : vatPham.entrySet()) {
             yeuCau.append(entry.getKey());
@@ -143,8 +191,9 @@ public class QuanLyKhachHangService {
     }
 
     private boolean handleSuccessfulSale(Map<String, Integer> inventory, PlayerData playerData) {
-        HashMap<String, Integer> requiredItems = khachHangHienTai.getVatPhamYeuCau();
+        Map<String, Integer> requiredItems = khachHangHienTai.getVatPhamYeuCau();
 
+        // 1. Kiểm tra đủ vật phẩm
         for (Map.Entry<String, Integer> entry : requiredItems.entrySet()) {
             String itemName = entry.getKey();
             int requiredQuantity = entry.getValue();
@@ -155,6 +204,7 @@ public class QuanLyKhachHangService {
             }
         }
 
+        // 2. Xử lý giao dịch
         int totalMoney = 0;
         for (Map.Entry<String, Integer> entry : requiredItems.entrySet()) {
             String itemName = entry.getKey();
@@ -164,6 +214,7 @@ public class QuanLyKhachHangService {
 
             totalMoney += itemPrice * requiredQuantity;
 
+            // Cập nhật tồn kho (inventory)
             if (currentQuantity == requiredQuantity) {
                 inventory.remove(itemName);
             } else {
@@ -171,6 +222,7 @@ public class QuanLyKhachHangService {
             }
         }
 
+        // 3. Xử lý logic Vong/Thật
         if (khachHangHienTai.isLaVong()) {
             playerData.mentalPoints = Math.max(0, playerData.mentalPoints - 10);
         } else {
@@ -183,8 +235,10 @@ public class QuanLyKhachHangService {
 
     private void handleRejectedSale(PlayerData playerData) {
         if (!khachHangHienTai.isLaVong()) {
+            // Phạt nếu từ chối khách hàng thật
             playerData.mentalPoints = Math.max(0, playerData.mentalPoints - 5);
         }
+        // Từ chối khách Vong không bị phạt
     }
 
     public String kiemTraDuVatPham(Map<String, Integer> inventory) {
@@ -193,7 +247,7 @@ public class QuanLyKhachHangService {
         }
 
         StringBuilder missingItems = new StringBuilder();
-        HashMap<String, Integer> requiredItems = khachHangHienTai.getVatPhamYeuCau();
+        Map<String, Integer> requiredItems = khachHangHienTai.getVatPhamYeuCau();
 
         for (Map.Entry<String, Integer> entry : requiredItems.entrySet()) {
             String itemName = entry.getKey();
@@ -218,7 +272,7 @@ public class QuanLyKhachHangService {
             return false;
         }
 
-        HashMap<String, Integer> requiredItems = khachHangHienTai.getVatPhamYeuCau();
+        Map<String, Integer> requiredItems = khachHangHienTai.getVatPhamYeuCau();
 
         for (Map.Entry<String, Integer> entry : requiredItems.entrySet()) {
             String itemName = entry.getKey();
@@ -235,6 +289,17 @@ public class QuanLyKhachHangService {
     public int getGiaVatPham(String tenVatPham) {
         return giaVatPham.getOrDefault(tenVatPham, 50);
     }
+    
+    // Bổ sung: Lấy giá nhập (Base Cost)
+    public int getGiaNhap(String tenVatPham) {
+        Item item = itemData.get(tenVatPham);
+        return item != null ? item.getBaseCost() : 50;
+    }
+
+    // Bổ sung: Lấy Item object
+    public Item getItem(String tenVatPham) {
+        return itemData.get(tenVatPham);
+    }
 
     public List<String> getDanhSachVatPham() {
         return new ArrayList<>(danhSachVatPham);
@@ -243,4 +308,7 @@ public class QuanLyKhachHangService {
     public Map<String, Integer> getGiaVatPhamMap() {
         return new HashMap<>(giaVatPham);
     }
+    public Map<String, Item> getItemDataMap() {
+    return new HashMap<>(itemData); // Trả về bản sao để bảo vệ dữ liệu gốc
+}
 }

@@ -2,7 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,166 +10,154 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import model.QuanLyKhachHang;
-import model.DatabaseStorage;
+
+import model.NguoiChoiDAO;
+import model.VatPhamDAO;
+import model.KhachHangDAO;
 import model.PlayerData;
 import model.KhachHang;
 import model.Item;
 import util.DBConnection;
-import util.SimpleDataSource;
 
 @WebServlet(name = "GameController", urlPatterns = {"/game"})
 public class GameController extends HttpServlet {
-    private QuanLyKhachHang quanLyKhachHang;
+
+   private NguoiChoiDAO nguoiChoiDAO;
+    private VatPhamDAO vatPhamDAO;
+    private KhachHangDAO khachHangDAO;
+
     private boolean databaseConnected = false;
-    
-    // Danh sách items mặc định
-    private List<Item> availableItems;
 
     @Override
     public void init() throws ServletException {
+        System.out.println("Đang khởi tạo GameController...");
         try {
-            System.out.println("Đang khởi tạo GameController...");
-            
-            // Khởi tạo danh sách items mặc định
-            initializeDefaultItems();
-            
-            // Test kết nối database
             Connection testConn = DBConnection.getConnection();
             if (testConn != null) {
-                System.out.println("Kết nối database thành công!");
+                System.out.println("Kết nối database thành công! ✅");
                 testConn.close();
-                
-                // Tạo DataSource và khởi tạo QuanLyKhachHang
-                SimpleDataSource dataSource = new SimpleDataSource();
-                this.quanLyKhachHang = new QuanLyKhachHang(dataSource);
                 this.databaseConnected = true;
-                System.out.println("Khởi tạo GameController thành công!");
+
+                // Khởi tạo DAO chỉ khi kết nối thành công
+                this.nguoiChoiDAO = new NguoiChoiDAO();
+                this.vatPhamDAO = new VatPhamDAO();
+                this.khachHangDAO = new KhachHangDAO();
+
+                System.out.println("Khởi tạo GameController và các DAO thành công!");
             } else {
-                System.out.println("Kết nối database thất bại!");
+                System.out.println("LỖI KHỞI TẠO: Kết nối database thất bại! ❌");
                 this.databaseConnected = false;
             }
-            
         } catch (Exception e) {
-            System.err.println("Lỗi khởi tạo GameController: " + e.getMessage());
+            System.err.println("Lỗi nghiêm trọng khi khởi tạo GameController: " + e.getMessage());
             e.printStackTrace();
             this.databaseConnected = false;
         }
     }
 
-    private void initializeDefaultItems() {
-        availableItems = new ArrayList<>();
-        // Thêm các items mặc định
-        availableItems.add(new Item("Bánh mì", 50, 0, 25, "Bánh mì thơm ngon", "food"));
-        availableItems.add(new Item("Nước suối", 30, 0, 10, "Nước suối tinh khiết", "drink"));
-        availableItems.add(new Item("Thuốc", 100, 500, 60, "Thuốc chữa bệnh", "medicine"));
-        availableItems.add(new Item("Snack", 20, 300, 12, "Snack giòn tan", "food"));
-        availableItems.add(new Item("Cà phê", 80, 400, 40, "Cà phê thơm", "drink"));
-        availableItems.add(new Item("Bánh ngọt", 60, 350, 30, "Bánh ngọt hảo hạng", "food"));
-        System.out.println("Đã khởi tạo " + availableItems.size() + " items mặc định");
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
         Integer playerId = (Integer) session.getAttribute("playerId");
-        
-        // Nếu chưa có playerId, tạo mới với ID = 1
+
         if (playerId == null) {
-            playerId = 1; // Sử dụng ID số theo database
+            playerId = 1;
             session.setAttribute("playerId", playerId);
         }
-        
+
         String action = request.getParameter("action");
         
+        // --- Xử lý Lỗi Kết nối DB ---
+        if (!databaseConnected) {
+            request.setAttribute("errorMessage", "LỖI KẾT NỐI DB: Dữ liệu game có thể bị thiếu hoặc sai lệch.");
+        }
+
+        PlayerData playerData = null;
+        List<Item> availableItems = Collections.emptyList();
+        List<KhachHang> customerProfiles = Collections.emptyList();
+        KhachHang currentCustomer = null;
+
         try {
-            // Kiểm tra kết nối database
-            if (!databaseConnected || quanLyKhachHang == null) {
-                handleOfflineMode(request, response);
-                return;
+            if (databaseConnected) {
+                // 1. TẢI DỮ LIỆU NGƯỜI CHƠI
+                if ("new".equals(action)) {
+                    nguoiChoiDAO.createNewPlayer(playerId, "Chủ Quán Mới");
+                    playerData = nguoiChoiDAO.loadPlayerData(playerId);
+                } else {
+                    playerData = nguoiChoiDAO.loadPlayerData(playerId);
+
+                    if (playerData == null) {
+                        nguoiChoiDAO.createNewPlayer(playerId, "Player1");
+                        playerData = nguoiChoiDAO.loadPlayerData(playerId);
+                    }
+                }
+                
+               // 2. Tải danh sách vật phẩm có sẵn (Giữ nguyên logic của bạn)
+                availableItems = vatPhamDAO.getAllAvailableItems();
+                
+                // 3. Tải Hồ sơ Khách hàng Gốc (DEBUG HERE)
+                System.out.println("🔎 DEBUG CONTROLLER: Bắt đầu gọi khachHangDAO.loadDailyCustomerProfiles()");
+                customerProfiles = khachHangDAO.loadDailyCustomerProfiles(); 
+                
+                // 4. Gán Khách hàng hiện tại 
+                if (customerProfiles != null && !customerProfiles.isEmpty()) {
+                    
+                    // DEBUG QUAN TRỌNG: Kiểm tra dữ liệu sau khi nhận từ DAO
+                    System.out.println("✅ DEBUG CONTROLLER: Đã nhận danh sách khách hàng từ DAO. Số lượng: " + customerProfiles.size());
+                    currentCustomer = customerProfiles.get(0); 
+                    System.out.println("🔎 DEBUG CONTROLLER: Khách hàng hiện tại (đầu tiên): " + currentCustomer.toString());
+                    
+                } else {
+                    System.out.println("⚠️ CẢNH BÁO: Danh sách hồ sơ khách hàng Gốc đang RỖNG. Không thể gán currentCustomer.");
+                    currentCustomer = null;
+                }
+            } else {
+                System.out.println("BỎ QUA: Bỏ qua tải dữ liệu game do lỗi kết nối DB.");
             }
-            
-            // Tạo DataSource từ DBConnection
-            SimpleDataSource dataSource = new SimpleDataSource();
-            
-            // Load player data từ database - chuyển ID sang String để phù hợp với method
-            PlayerData playerData = DatabaseStorage.loadPlayerData(String.valueOf(playerId), dataSource);
-            
-            if ("new".equals(action)) {
-                // Tạo game mới - tạo danh sách khách hàng mới
-                quanLyKhachHang.layDanhSachKhachHangHomNay();
-                playerData.currentDay = 1;
-                playerData.money = 1000;
-                playerData.mentalPoints = 100;
-                // Lưu player data mới
-                DatabaseStorage.savePlayerData(String.valueOf(playerId), playerData, dataSource);
-            }
-            
-            // Lấy danh sách khách hàng hiện tại
-            List<KhachHang> danhSachKhachHang = quanLyKhachHang.taiDanhSachKhachHang();
-            
-            // Set attributes cho JSP - QUAN TRỌNG: thêm availableItems
-            request.setAttribute("danhSachKhachHang", danhSachKhachHang);
+
+            // 5. Set attributes cho JSP
+            // *** ĐẢM BẢO TÊN BIẾN NÀY PHẢI KHỚP CHÍNH XÁC VỚI JSP: ${customerProfiles} ***
+            request.setAttribute("customerProfiles", customerProfiles); 
+            request.setAttribute("currentCustomer", currentCustomer); 
             request.setAttribute("playerData", playerData);
-            request.setAttribute("soKhachVong", quanLyKhachHang.demSoKhachVong(danhSachKhachHang));
-            request.setAttribute("soKhachThuong", quanLyKhachHang.demSoKhachThuong(danhSachKhachHang));
-            request.setAttribute("availableItems", availableItems); // THÊM DÒNG NÀY
-            request.setAttribute("inventory", playerData.inventory); // THÊM DÒNG NÀY
-            request.setAttribute("databaseConnected", true);
+            request.setAttribute("availableItems", availableItems);
+            
+            // Kiểm tra Null cho Inventory
+            if (playerData != null && playerData.inventory != null) {
+                request.setAttribute("inventory", playerData.inventory);
+            } else {
+                request.setAttribute("inventory", Collections.emptyMap()); 
+            }
+
+            request.setAttribute("databaseConnected", databaseConnected);
+
+            // LUÔN chuyển hướng đến game.jsp
+            request.getRequestDispatcher("/game.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            // Xử lý lỗi trong quá trình tải dữ liệu (SQLException)
+            System.err.println("❌ Lỗi xử lý game khi tải dữ liệu: " + e.getMessage());
+            e.printStackTrace();
+            
+            request.setAttribute("errorMessage", "Lỗi dữ liệu game nghiêm trọng: " + e.getMessage());
             
             request.getRequestDispatcher("/game.jsp").forward(request, response);
-            
-        } catch (Exception e) {
-            System.err.println("Lỗi xử lý game: " + e.getMessage());
-            e.printStackTrace();
-            handleOfflineMode(request, response);
         }
-    }
-
-    private void handleOfflineMode(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        
-        // Tạo dữ liệu mẫu cho chế độ offline
-        PlayerData playerData = new PlayerData();
-        playerData.money = 1000;
-        playerData.mentalPoints = 100;
-        playerData.currentDay = 1;
-        
-        // Tạo inventory mẫu
-        playerData.inventory.put("Bánh mì", 5);
-        playerData.inventory.put("Nước suối", 3);
-        
-        // Tạo danh sách khách hàng mẫu
-        List<KhachHang> danhSachKhachHang = createSampleCustomers();
-        
-        request.setAttribute("danhSachKhachHang", danhSachKhachHang);
-        request.setAttribute("playerData", playerData);
-        request.setAttribute("soKhachVong", 3);
-        request.setAttribute("soKhachThuong", 5);
-        request.setAttribute("availableItems", availableItems); // THÊM DÒNG NÀY
-        request.setAttribute("inventory", playerData.inventory); // THÊM DÒNG NÀY
-        request.setAttribute("databaseConnected", false);
-        request.setAttribute("errorMessage", "Đang ở chế độ offline. Không thể kết nối database.");
-        
-        request.getRequestDispatcher("/game.jsp").forward(request, response);
-    }
-    
-    private List<KhachHang> createSampleCustomers() {
-        List<KhachHang> customers = new ArrayList<>();
-        customers.add(new KhachHang("Liễu Như Yên", 25, "Nữ", "KH001", false));
-        customers.add(new KhachHang("Tạ Minh Kha", 30, "Nam", "KH002", false));
-        customers.add(new KhachHang("Tiểu Lạc", 18, "Nữ", "KH003", false));
-        customers.add(new KhachHang("Shyn Mụi Mụi", 20, "Nữ", "KH004", true));
-        customers.add(new KhachHang("Tăng Quốc Cường", 28, "Nam", "KH005", false));
-        customers.add(new KhachHang("Huyền Thanh Tố Uyển", 19, "Nữ", "KH010", false));
-        return customers;
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        String action = request.getParameter("action");
+        if (action != null) {
+            System.out.println("Xử lý hành động game: " + action);
+            // 🚨 LOGIC XỬ LÝ ACTIONS SẼ ĐƯỢC ĐẶT Ở ĐÂY
+        }
+
+        // Tải lại dữ liệu game sau khi xử lý POST
         doGet(request, response);
     }
 }

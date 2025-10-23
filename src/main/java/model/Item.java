@@ -16,6 +16,16 @@ public class Item {
         this.description = description;
         this.type = type;
     }
+    
+    // 🎯 CONSTRUCTOR CHO DAO TỪ BẢNG VAT_PHAM (chỉ có 3 trường chính)
+    public Item(String name, int price, int unlockPrice) {
+        this.name = name;
+        this.price = price;
+        this.unlockPrice = unlockPrice;
+        this.baseCost = 0; // Giá trị mặc định
+        this.description = "Sản phẩm được tải từ DB"; // Giá trị mặc định
+        this.type = "goods"; // Giá trị mặc định
+    }
 
     public String getName() { return name; }
     public int getPrice() { return price; }
@@ -31,7 +41,7 @@ public class Item {
     public int getGiaNhap() { return baseCost; }
     public String getMoTa() { return description; }
     public String getLoai() { return type; }
-    // Giả định thêm thuộc tính cho mặc cả (có thể được tính toán ở Service)
+    
     public int getMaxDiscountPercent() { return 25; } 
-    public int getTonKho() { return 0; } // Sẽ được Service gán giá trị từ Kho_Do
+    public int getTonKho() { return 0; } // Sẽ được Service/Controller gán giá trị
 }
